@@ -40,7 +40,7 @@
 var EXPORTED_SYMBOLS = ["Dict"];
 
 
-function createDictProxy() {
+function createDictProxy(aInitial) {
   // This is inside createDictProxy to be unique for each proxy
   function DictVal(aVal) {
     this.value = aVal;
@@ -51,6 +51,9 @@ function createDictProxy() {
   // This is the actual dictionary of items. Each valid item is a DictVal
   // instance containing the item.
   let items = {};
+  for (let [key, val] in Iterator(aInitial))
+    items[key] = new DictVal(val);
+
   return Proxy.create({
     /**
      * Given a string, returns whether the string is a key in this dictionary.
@@ -113,6 +116,8 @@ function createDictProxy() {
   });
 }
 
-function Dict() {
-  this.__proto__ = createDictProxy();
+function Dict(aInitial) {
+  if (aInitial === undefined)
+    aInitial = {};
+  this.__proto__ = createDictProxy(aInitial);
 }
