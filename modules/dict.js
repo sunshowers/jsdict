@@ -51,7 +51,7 @@ function createDictProxy() {
   // This is the actual dictionary of items. Each valid item is a DictVal
   // instance containing the item.
   let items = {};
-  return {
+  return Proxy.create({
     /**
      * Given a string, returns whether the string is a key in this dictionary.
      */
@@ -110,7 +110,7 @@ function createDictProxy() {
     keys: function DictProxy_keys() {
       return Object.keys(items);
     },
-  };
+  });
 }
 
 function Dict() {
