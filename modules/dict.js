@@ -119,5 +119,8 @@ function createDictProxy(aInitial) {
 function Dict(aInitial) {
   if (aInitial === undefined)
     aInitial = {};
-  this.__proto__ = createDictProxy(aInitial);
+  // Instead of the newly created object, this returns our proxy. We can't use
+  // __proto__ here because while setting a value there's going to be no reason
+  // to actually look up the prototype chain.
+  return createDictProxy(aInitial);
 }
