@@ -112,7 +112,7 @@ DictImpl.prototype = Object.freeze({
     // If we don't capture this.items here then the this-binding will be
     // incorrect when the generator is executed
     let items = this.items;
-    return (unconvert(k) for (k in this.items));
+    return (unconvert(k) for (k in items));
   },
 });
 
