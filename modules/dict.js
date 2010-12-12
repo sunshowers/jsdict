@@ -49,9 +49,13 @@ function DictImpl(aInitial) {
 DictImpl.prototype = Object.freeze({
   /**
    * Gets the value for a key from the dictionary.
+   *
+   * @param aKey The key to look for
+   * @param [aDefault] An optional default value to use if the key isn't found.
+   *                   Defaults to undefined.
    */
-  get: function DictImpl_get(aKey) {
-    return this._items[aKey];
+  get: function DictImpl_get(aKey, aDefault) {
+    return (aKey in this._items) ? this._items[aKey] : aDefault;
   },
 
   /**
