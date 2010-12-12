@@ -55,6 +55,8 @@ function unconvert(aProp) {
 }
 
 function DictBase(aInitial) {
+  if (aInitial === undefined)
+    aInitial = {};
   this._items = {};
   for (let [key, val] in Iterator(aInitial))
     this._items[convert(key)] = val;
