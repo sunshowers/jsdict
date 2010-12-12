@@ -39,25 +39,10 @@
 
 var EXPORTED_SYMBOLS = ["Dict"];
 
-/**
- * Transforms a given key into a property name guaranteed not to collide with
- * any built-ins.
- */
-function convert(aKey) {
-  return ":" + aKey;
-}
-
-/**
- * Transforms a property into a key suitable for providing to the outside world.
- */
-function unconvert(aProp) {
-  return aProp.substr(1);
-}
-
 function DictImpl(aInitial) {
-  this.items = {};
+  this._items = {__proto__: null};
   for (let [key, val] in Iterator(aInitial))
-    this.items[convert(key)] = val;
+    this._items[key] = val;
   return Object.freeze(this);
 }
 
@@ -66,22 +51,21 @@ DictImpl.prototype = Object.freeze({
    * Gets the value for a key from the dictionary.
    */
   get: function DictImpl_get(aKey) {
-    let prop = convert(aKey);
-    return this.items[prop];
+    return this._items[aKey];
   },
 
   /**
    * Sets the value for a key in the dictionary.
    */
   set: function DictImpl_set(aKey, aValue) {
-    this.items[convert(aKey)] = aValue;
+    this._items[aKey] = aValue;
   },
 
   /**
    * Returns whether a key is in the dictionary.
    */
   has: function DictImpl_has(aKey) {
-    return (convert(aKey) in this.items);
+    return (aKey in this._items);
   },
 
   /**
@@ -90,9 +74,9 @@ DictImpl.prototype = Object.freeze({
    * @returns true if the key was found, false if it wasn't.
    */
   del: function DictImpl_delete(aKey) {
-    let prop = convert(aKey);
-    if (prop in this.items) {
-      delete this.items[prop];
+    let prop = aKey;
+    if (prop in this._items) {
+      delete this._items[prop];
       return true;
     }
     return false;
@@ -102,17 +86,17 @@ DictImpl.prototype = Object.freeze({
    * Returns a list of all the keys in the dictionary.
    */
   keys: function DictImpl_keys() {
-    return [unconvert(k) for (k in this.items)];
+    return [k for (k in this._items)];
   },
 
   /**
    * Returns an iterator over all the keys in the dictionary.
    */
   iterkeys: function DictImpl_iterkeys() {
-    // If we don't capture this.items here then the this-binding will be
+    // If we don't capture this._items here then the this-binding will be
     // incorrect when the generator is executed
-    let items = this.items;
-    return (unconvert(k) for (k in items));
+    let items = this._items;
+    return (k for (k in items));
   },
 });
 
@@ -147,12 +131,12 @@ function createDictProxy(aInitial) {
     },
 
     get: function DictProxy_get(aReceiver, aName) {
-      // Don't allow the outside world to access |items|
-      if (aName === "items")
-        return undefined;
-      // We want to forward method calls rather than delegating them
-      let prop = dict[aName];
-      return (typeof prop) === "function" ? prop.bind(dict) : prop;
+      // Don't allow the outside world to access |_items|
+     if (aName === "_items")
+       return undefined;
+      // We're assuming that only functions exist. Testing using typeof seems to
+      // be slow.
+      return dict[aName].bind(dict);
     },
 
     set: function DictProxy_set(aReceiver, aName, aVal) {
