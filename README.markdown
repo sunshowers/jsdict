@@ -44,9 +44,8 @@ The solution
 Unfortunately we cannot use direct property accesses, because there's no way to
 distinguish between toString called because JavaScript wants to coerce our
 object into a string and toString read as a key. [Virtual Values for Language
-Extensions][1], if implemented in Harmony, will likely be able to provide a
-similarly concise construct by allowing us to write getters as `x = dict(key)`
-and setters as `dict(key) = x`.
+Extensions][1], if implemented in Harmony, *might* be able to solve this, but
+I'm not sure.
 
 Limitations
 -----------
