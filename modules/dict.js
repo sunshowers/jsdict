@@ -103,7 +103,17 @@ DictImpl.prototype = Object.freeze({
    */
   keys: function DictImpl_keys() {
     return [unconvert(k) for (k in this.items)];
-  }
+  },
+
+  /**
+   * Returns an iterator over all the keys in the dictionary.
+   */
+  iterkeys: function DictImpl_iterkeys() {
+    // If we don't capture this.items here then the this-binding will be
+    // incorrect when the generator is executed
+    let items = this.items;
+    return (unconvert(k) for (k in this.items));
+  },
 });
 
 function createDictProxy(aInitial) {
@@ -155,6 +165,10 @@ function createDictProxy(aInitial) {
     enumerate: function DictProxy_enumerate() {
       // We make for..in iterate over the keys.
       return dict.keys();
+    },
+
+    iterate: function DictProxy_iterate() {
+      return dict.iterkeys();
     },
 
     keys: function DictProxy_keys() {
