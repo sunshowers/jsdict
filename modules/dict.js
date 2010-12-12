@@ -136,7 +136,9 @@ function createDictProxy(aInitial) {
        return undefined;
       // We're assuming that only functions exist. Testing using typeof seems to
       // be slow.
-      return dict[aName].bind(dict);
+      if (aName in dict)
+        return dict[aName].bind(dict);
+      return undefined;
     },
 
     set: function DictProxy_set(aReceiver, aName, aVal) {
