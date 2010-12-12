@@ -39,79 +39,126 @@
 
 var EXPORTED_SYMBOLS = ["Dict"];
 
+/**
+ * Transforms a given key into a property name guaranteed not to collide with
+ * any built-ins.
+ */
+function convert(aKey) {
+  return ":" + aKey;
+}
+
+/**
+ * Transforms a property into a key suitable for providing to the outside world.
+ */
+function unconvert(aProp) {
+  return aProp.substr(1);
+}
+
+function DictImpl(aInitial) {
+  this.items = {};
+  for (let [key, val] in Iterator(aInitial))
+    this.items[convert(key)] = val;
+  return Object.freeze(this);
+}
+
+DictImpl.prototype = Object.freeze({
+  /**
+   * Gets the value for a key from the dictionary.
+   */
+  get: function DictImpl_get(aKey) {
+    let prop = convert(aKey);
+    return this.items[prop];
+  },
+
+  /**
+   * Sets the value for a key in the dictionary.
+   */
+  set: function DictImpl_set(aKey, aValue) {
+    this.items[convert(aKey)] = aValue;
+  },
+
+  /**
+   * Returns whether a key is in the dictionary.
+   */
+  has: function DictImpl_has(aKey) {
+    return (convert(aKey) in this.items);
+  },
+
+  /**
+   * Deletes a key from the dictionary.
+   *
+   * @returns true if the key was found, false if it wasn't.
+   */
+  del: function DictImpl_delete(aKey) {
+    let prop = convert(aKey);
+    if (prop in this.items) {
+      delete this.items[prop];
+      return true;
+    }
+    return false;
+  },
+
+  /**
+   * Returns a list of all the keys in the dictionary.
+   */
+  keys: function DictImpl_keys() {
+    return [unconvert(k) for (k in this.items)];
+  }
+});
 
 function createDictProxy(aInitial) {
-  // This is inside createDictProxy to be unique for each proxy
-  function DictVal(aVal) {
-    this.value = aVal;
-    // This should be immutable
-    Object.freeze(this);
-  }
-
-  // This is the actual dictionary of items. Each valid item is a DictVal
-  // instance containing the item.
-  let items = {};
-  for (let [key, val] in Iterator(aInitial))
-    items[key] = new DictVal(val);
+  let dict = new DictImpl(aInitial);
 
   return Proxy.create({
-    /**
-     * Given a string, returns whether the string is a key in this dictionary.
-     */
-    _isKey: function DictProxy__isKey(aStr) {
-      return (items.hasOwnProperty(aStr) && items[aStr] instanceof DictVal);
-    },
-
     getOwnPropertyDescriptor: function DictProxy_getOwnPropertyDescriptor(aName) {
-      if (!this._isKey(aName))
-        return undefined;
-
-      return {
-        value: items[aName].value,
-        writable: true,
-        configurable: true,
-        enumerable: true,
-      };
+      let pd = Object.getOwnPropertyDescriptor(dict, aName);
+      if (pd)
+        pd.configurable = true;
+      return pd;
     },
 
     getOwnPropertyNames: function DictProxy_getOwnPropertyNames(aName) {
-      // getOwnPropertyNames on items should return exactly the set of
-      // keys that we've added.
-      return Object.getOwnPropertyNames(items);
+      return Object.getOwnPropertyNames(dict);
     },
 
     delete: function DictProxy_delete(aName) {
-      if (!this._isKey(aName))
-        return (delete items[aName]);
-      return false;
+      // dict is frozen, so this is always going to fail.
+      return (delete dict[aName]);
     },
 
     has: function DictProxy_has(aName) {
-      // We make "in" behave like hasOwnProperty
-      return this._isKey(aName);
+      // This is special -- we make this test for whether this key is in the
+      // dictionary
+      return dict.has(aName);
     },
 
     hasOwn: function DictProxy_hasOwn(aName) {
-      return this._isKey(aName);
+      return dict.hasOwnProperty(aName);
     },
 
     get: function DictProxy_get(aReceiver, aName) {
-      if (this._isKey(aName))
-        return items[aName].value;
-      return items[aName];
+      // Don't allow the outside world to access |items|
+      if (aName === "items")
+        return undefined;
+      // We want to forward method calls rather than delegating them
+      let prop = dict[aName];
+      return (typeof prop) === "function" ? prop.bind(dict) : prop;
     },
 
     set: function DictProxy_set(aReceiver, aName, aVal) {
-      items[aName] = new DictVal(aVal);
+      // We could just try to set the value on dict, but we'll be nicer and
+      // throw an exception
+      throw new Error("Setting properties on this dictionary is not allowed. " +
+                      "To set keys, use |dict.set|");
     },
 
     enumerate: function DictProxy_enumerate() {
-      // We make for..in behave like Object.keys
-      return Object.keys(items);
+      // We make for..in iterate over the keys.
+      return dict.keys();
     },
 
     keys: function DictProxy_keys() {
-      return Object.keys(items);
+      return Object.keys(dict);
     },
   });
 }
