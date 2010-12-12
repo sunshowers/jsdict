@@ -108,6 +108,22 @@ DictBase.prototype = Object.freeze({
   },
 
   /**
+   * Returns a list of all the values in the dictionary.
+   */
+  values: function DictBase_values() {
+    let items = this._items;
+    return [items[k] for (k in items)];
+  },
+
+  /**
+   * Returns a list of all the items in the dictionary as key-value pairs.
+   */
+  items: function DictBase_items() {
+    let items = this._items;
+    return [[unconvert(k), items[k]] for (k in items)];
+  },
+
+  /**
    * Returns an iterator over all the keys in the dictionary.
    */
   iterkeys: function DictBase_iterkeys() {
@@ -115,5 +131,25 @@ DictBase.prototype = Object.freeze({
     // incorrect when the generator is executed
     let items = this._items;
     return (unconvert(k) for (k in items));
+  },
+
+  /**
+   * Returns an iterator over all the values in the dictionary.
+   */
+  itervalues: function DictBase_itervalues() {
+    // If we don't capture this._items here then the this-binding will be
+    // incorrect when the generator is executed
+    let items = this._items;
+    return (items[k] for (k in items));
+  },
+
+  /**
+   * Returns an iterator over all the items in the dictionary as key-value pairs.
+   */
+  iteritems: function DictBase_iteritems() {
+    // If we don't capture this._items here then the this-binding will be
+    // incorrect when the generator is executed
+    let items = this._items;
+    return ([unconvert(k), items[k]] for (k in items));
   },
 });
