@@ -43,7 +43,8 @@ The solution
 
 Unfortunately we cannot use direct property accesses, because there's no way to
 distinguish between toString called because JavaScript wants to coerce our
-object into a string and toString read as a key.
+object into a string and toString read as a key. [Virtual Values for Language
+Extensions][1], if implemented in Harmony, will likely be able to solve this.
 
 Limitations
 -----------
@@ -52,3 +53,5 @@ Limitations
 
 * We only support strings and numbers (and things that can be coerced to strings
   or numbers) as keys.
+
+[1]: http://www.soe.ucsc.edu/research/report?ID=1588
