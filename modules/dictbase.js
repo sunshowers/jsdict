@@ -91,7 +91,7 @@ DictBase.prototype = Object.freeze({
    *
    * @returns true if the key was found, false if it wasn't.
    */
-  del: function DictBase_delete(aKey) {
+  del: function DictBase_del(aKey) {
     let prop = convert(aKey);
     if (prop in this._items) {
       delete this._items[prop];
