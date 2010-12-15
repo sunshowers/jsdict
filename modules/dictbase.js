@@ -152,4 +152,13 @@ DictBase.prototype = Object.freeze({
     let items = this._items;
     return ([unconvert(k), items[k]] for (k in items));
   },
+
+  /**
+   * Returns a string representation of this dictionary.
+   */
+  toString: function DictBase_toString() {
+    return "{" +
+      [(key + ": " + val) for ([key, val] in this.iteritems())].join(", ") +
+      "}";
+  },
 });
