@@ -70,10 +70,20 @@ Dict.prototype = Object.freeze({
   /**
    * Gets the value for a key from the dictionary. If the key is not a string,
    * it will be converted to a string before the lookup happens.
+   *
+   * @param aKey The key to look up
+   * @param [aDefault] An optional default value to return if the key is not
+   *                   present. Defaults to |null|.
+   * @returns The item, or aDefault if it isn't found.
    */
-  get: function Dict_get(aKey) {
+  get: function Dict_get(aKey, aDefault) {
+    if (aDefault === undefined)
+      aDefault = null;
     let prop = convert(aKey);
-    return this._items[prop];
+    if (prop in this._items)
+      return this._items[prop];
+    else
+      return aDefault;
   },
 
   /**
