@@ -90,7 +90,7 @@ Dict.prototype = Object.freeze({
     if (aDefault === undefined)
       aDefault = null;
     let prop = convert(aKey);
-    if (prop in this._items)
+    if (this._items.hasOwnProperty(prop))
       return this._items[prop];
     else
       return aDefault;
@@ -112,7 +112,7 @@ Dict.prototype = Object.freeze({
    * it will be converted to a string before the set happens.
    */
   has: function Dict_has(aKey) {
-    return (convert(aKey) in this._items);
+    return (this._items.hasOwnProperty(convert(aKey)));
   },
 
   /**
@@ -123,7 +123,7 @@ Dict.prototype = Object.freeze({
    */
   del: function Dict_del(aKey) {
     let prop = convert(aKey);
-    if (prop in this._items) {
+    if (this._items.hasOwnProperty(prop)) {
       delete this._items[prop];
       this._count--;
       return true;
