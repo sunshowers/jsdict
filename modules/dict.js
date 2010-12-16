@@ -61,12 +61,22 @@ function Dict(aInitial) {
   if (aInitial === undefined)
     aInitial = {};
   this._items = {};
-  for (let [key, val] in Iterator(aInitial))
+  for (let [key, val] in Iterator(aInitial)) {
     this._items[convert(key)] = val;
+    this._count++;
+  }
   return Object.freeze(this);
 }
 
 Dict.prototype = Object.freeze({
+  _count: 0,
+  /**
+   * The number of items in the dictionary.
+   */
+  get count() {
+    return this._count;
+  },
+
   /**
    * Gets the value for a key from the dictionary. If the key is not a string,
    * it will be converted to a string before the lookup happens.
@@ -91,7 +101,10 @@ Dict.prototype = Object.freeze({
    * it will be converted to a string before the set happens.
    */
   set: function Dict_set(aKey, aValue) {
-    this._items[convert(aKey)] = aValue;
+    let prop = convert(aKey);
+    if (!this._items.hasOwnProperty(prop))
+      this._count++;
+    this._items[prop] = aValue;
   },
 
   /**
@@ -112,6 +125,7 @@ Dict.prototype = Object.freeze({
     let prop = convert(aKey);
     if (prop in this._items) {
       delete this._items[prop];
+      this._count--;
       return true;
     }
     return false;
