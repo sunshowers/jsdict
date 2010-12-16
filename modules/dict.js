@@ -87,21 +87,24 @@ Dict.prototype = Object.freeze({
   },
 
   /**
-   * Sets the value for a key in the dictionary.
+   * Sets the value for a key in the dictionary. If the key is a not a string,
+   * it will be converted to a string before the set happens.
    */
   set: function Dict_set(aKey, aValue) {
     this._items[convert(aKey)] = aValue;
   },
 
   /**
-   * Returns whether a key is in the dictionary.
+   * Returns whether a key is in the dictionary. If the key is a not a string,
+   * it will be converted to a string before the set happens.
    */
   has: function Dict_has(aKey) {
     return (convert(aKey) in this._items);
   },
 
   /**
-   * Deletes a key from the dictionary.
+   * Deletes a key from the dictionary. If the key is a not a string, it will be
+   * converted to a string before the set happens.
    *
    * @returns true if the key was found, false if it wasn't.
    */
