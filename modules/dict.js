@@ -54,6 +54,9 @@ function unconvert(aProp) {
   return aProp.substr(1);
 }
 
+/**
+ * A dictionary of strings to arbitrary JS objects.
+ */
 function Dict(aInitial) {
   if (aInitial === undefined)
     aInitial = {};
@@ -65,7 +68,8 @@ function Dict(aInitial) {
 
 Dict.prototype = Object.freeze({
   /**
-   * Gets the value for a key from the dictionary.
+   * Gets the value for a key from the dictionary. If the key is not a string,
+   * it will be converted to a string before the lookup happens.
    */
   get: function Dict_get(aKey) {
     let prop = convert(aKey);
