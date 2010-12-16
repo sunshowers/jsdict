@@ -126,7 +126,7 @@ Dict.prototype = Object.freeze({
   del: function Dict_del(aKey) {
     let prop = convert(aKey);
     if (this._state.items.hasOwnProperty(prop)) {
-      delete this._items[prop];
+      delete this._state.items[prop];
       this._state.count--;
       return true;
     }
@@ -169,7 +169,7 @@ Dict.prototype = Object.freeze({
    * mutated during iteration.
    */
   get keys() {
-    // If we don't capture this._items here then the this-binding will be
+    // If we don't capture this._state.items here then the this-binding will be
     // incorrect when the generator is executed
     let items = this._state.items;
     return (unconvert(k) for (k in items));
@@ -181,7 +181,7 @@ Dict.prototype = Object.freeze({
    * mutated during iteration.
    */
   get values() {
-    // If we don't capture this._items here then the this-binding will be
+    // If we don't capture this._state.items here then the this-binding will be
     // incorrect when the generator is executed
     let items = this._state.items;
     return (items[k] for (k in items));
@@ -193,7 +193,7 @@ Dict.prototype = Object.freeze({
    * dictionary is mutated during iteration.
    */
   get items() {
-    // If we don't capture this._items here then the this-binding will be
+    // If we don't capture this._state.items here then the this-binding will be
     // incorrect when the generator is executed
     let items = this._state.items;
     return ([unconvert(k), items[k]] for (k in items));
