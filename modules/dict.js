@@ -39,74 +39,126 @@
 
 var EXPORTED_SYMBOLS = ["Dict"];
 
-Components.utils.import("resource://jsdict/dictbase.js");
+/**
+ * Transforms a given key into a property name guaranteed not to collide with
+ * any built-ins.
+ */
+function convert(aKey) {
+  return ":" + aKey;
+}
 
-function createDictProxy(aInitial) {
-  let dict = new DictBase(aInitial);
-
-  return Proxy.create({
-    getOwnPropertyDescriptor: function DictProxy_getOwnPropertyDescriptor(aName) {
-      let pd = Object.getOwnPropertyDescriptor(dict, aName);
-      if (pd)
-        pd.configurable = true;
-      return pd;
-    },
-
-    getOwnPropertyNames: function DictProxy_getOwnPropertyNames(aName) {
-      return Object.getOwnPropertyNames(dict);
-    },
-
-    delete: function DictProxy_delete(aName) {
-      // dict is frozen, so this is always going to fail.
-      return (delete dict[aName]);
-    },
-
-    has: function DictProxy_has(aName) {
-      // This is special -- we make this test for whether this key is in the
-      // dictionary
-      return dict.has(aName);
-    },
-
-    hasOwn: function DictProxy_hasOwn(aName) {
-      return dict.hasOwnProperty(aName);
-    },
-
-    get: function DictProxy_get(aReceiver, aName) {
-      // Don't allow the outside world to access |_items|
-      if (aName === "_items")
-        return undefined;
-      if (aName in dict) {
-        let val = aName[dict];
-        return (typeof val === "function") ? val.bind(dict) : val;
-      }
-      return undefined;
-    },
-
-    set: function DictProxy_set(aReceiver, aName, aVal) {
-      // We could just try to set the value on dict, but we'll be nicer and
-      // throw an exception
-      throw new Error("Setting properties on this dictionary is not allowed. " +
-                      "To set keys, use |dict.set|");
-    },
-
-    enumerate: function DictProxy_enumerate() {
-      // We make for..in iterate over the keys.
-      return dict.listkeys();
-    },
-
-    iterate: function DictProxy_iterate() {
-      return dict.keys;
-    },
-
-    keys: function DictProxy_keys() {
-      return Object.keys(dict);
-    },
-  });
+/**
+ * Transforms a property into a key suitable for providing to the outside world.
+ */
+function unconvert(aProp) {
+  return aProp.substr(1);
 }
 
 function Dict(aInitial) {
-  // Instead of the newly created object, this returns our proxy. We can't use
-  // __proto__ here because while setting a value there's going to be no reason
-  // to actually look up the prototype chain.
-  return createDictProxy(aInitial);
+  if (aInitial === undefined)
+    aInitial = {};
+  this._items = {};
+  for (let [key, val] in Iterator(aInitial))
+    this._items[convert(key)] = val;
+  return Object.freeze(this);
 }
+
+Dict.prototype = Object.freeze({
+  /**
+   * Gets the value for a key from the dictionary.
+   */
+  get: function Dict_get(aKey) {
+    let prop = convert(aKey);
+    return this._items[prop];
+  },
+
+  /**
+   * Sets the value for a key in the dictionary.
+   */
+  set: function Dict_set(aKey, aValue) {
+    this._items[convert(aKey)] = aValue;
+  },
+
+  /**
+   * Returns whether a key is in the dictionary.
+   */
+  has: function Dict_has(aKey) {
+    return (convert(aKey) in this._items);
+  },
+
+  /**
+   * Deletes a key from the dictionary.
+   *
+   * @returns true if the key was found, false if it wasn't.
+   */
+  del: function Dict_del(aKey) {
+    let prop = convert(aKey);
+    if (prop in this._items) {
+      delete this._items[prop];
+      return true;
+    }
+    return false;
+  },
+
+  /**
+   * Returns a list of all the keys in the dictionary.
+   */
+  listkeys: function Dict_listkeys() {
+    return [unconvert(k) for (k in this._items)];
+  },
+
+  /**
+   * Returns a list of all the values in the dictionary.
+   */
+  listvalues: function Dict_listvalues() {
+    let items = this._items;
+    return [items[k] for (k in items)];
+  },
+
+  /**
+   * Returns a list of all the items in the dictionary as key-value pairs.
+   */
+  listitems: function Dict_listitems() {
+    let items = this._items;
+    return [[unconvert(k), items[k]] for (k in items)];
+  },
+
+  /**
+   * Returns an iterator over all the keys in the dictionary.
+   */
+  get keys() {
+    // If we don't capture this._items here then the this-binding will be
+    // incorrect when the generator is executed
+    let items = this._items;
+    return (unconvert(k) for (k in items));
+  },
+
+  /**
+   * Returns an iterator over all the values in the dictionary.
+   */
+  get values() {
+    // If we don't capture this._items here then the this-binding will be
+    // incorrect when the generator is executed
+    let items = this._items;
+    return (items[k] for (k in items));
+  },
+
+  /**
+   * Returns an iterator over all the items in the dictionary as key-value pairs.
+   */
+  get items() {
+    // If we don't capture this._items here then the this-binding will be
+    // incorrect when the generator is executed
+    let items = this._items;
+    return ([unconvert(k), items[k]] for (k in items));
+  },
+
+  /**
+   * Returns a string representation of this dictionary.
+   */
+  toString: function Dict_toString() {
+    return "{" +
+      [(key + ": " + val) for ([key, val] in this.items)].join(", ") +
+      "}";
+  },
+});
