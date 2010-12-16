@@ -55,7 +55,12 @@ function unconvert(aProp) {
 }
 
 /**
- * A dictionary of strings to arbitrary JS objects.
+ * A dictionary of strings to arbitrary JS objects. This should be used whenever
+ * the keys are potentially arbitrary, to avoid collisions with built-in
+ * properties.
+ *
+ * @param aInitial An object containing the initial keys and values of this
+ *                 dictionary.
  */
 function Dict(aInitial) {
   if (aInitial === undefined)
