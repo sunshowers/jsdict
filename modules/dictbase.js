@@ -103,14 +103,14 @@ DictBase.prototype = Object.freeze({
   /**
    * Returns a list of all the keys in the dictionary.
    */
-  keys: function DictBase_keys() {
+  listkeys: function DictBase_listkeys() {
     return [unconvert(k) for (k in this._items)];
   },
 
   /**
    * Returns a list of all the values in the dictionary.
    */
-  values: function DictBase_values() {
+  listvalues: function DictBase_listvalues() {
     let items = this._items;
     return [items[k] for (k in items)];
   },
@@ -118,7 +118,7 @@ DictBase.prototype = Object.freeze({
   /**
    * Returns a list of all the items in the dictionary as key-value pairs.
    */
-  items: function DictBase_items() {
+  listitems: function DictBase_listitems() {
     let items = this._items;
     return [[unconvert(k), items[k]] for (k in items)];
   },
@@ -126,7 +126,7 @@ DictBase.prototype = Object.freeze({
   /**
    * Returns an iterator over all the keys in the dictionary.
    */
-  iterkeys: function DictBase_iterkeys() {
+  get keys() {
     // If we don't capture this._items here then the this-binding will be
     // incorrect when the generator is executed
     let items = this._items;
@@ -136,7 +136,7 @@ DictBase.prototype = Object.freeze({
   /**
    * Returns an iterator over all the values in the dictionary.
    */
-  itervalues: function DictBase_itervalues() {
+  get values() {
     // If we don't capture this._items here then the this-binding will be
     // incorrect when the generator is executed
     let items = this._items;
@@ -146,7 +146,7 @@ DictBase.prototype = Object.freeze({
   /**
    * Returns an iterator over all the items in the dictionary as key-value pairs.
    */
-  iteritems: function DictBase_iteritems() {
+  get items() {
     // If we don't capture this._items here then the this-binding will be
     // incorrect when the generator is executed
     let items = this._items;
@@ -158,7 +158,7 @@ DictBase.prototype = Object.freeze({
    */
   toString: function DictBase_toString() {
     return "{" +
-      [(key + ": " + val) for ([key, val] in this.iteritems())].join(", ") +
+      [(key + ": " + val) for ([key, val] in this.items)].join(", ") +
       "}";
   },
 });

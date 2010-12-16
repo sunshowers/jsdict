@@ -75,10 +75,10 @@ function createDictProxy(aInitial) {
       // Don't allow the outside world to access |_items|
       if (aName === "_items")
         return undefined;
-      // We're assuming that only functions exist. Testing using typeof seems to
-      // be slow.
-      if (aName in dict)
-        return dict[aName].bind(dict);
+      if (aName in dict) {
+        let val = aName[dict];
+        return (typeof val === "function") ? val.bind(dict) : val;
+      }
       return undefined;
     },
 
@@ -91,11 +91,11 @@ function createDictProxy(aInitial) {
 
     enumerate: function DictProxy_enumerate() {
       // We make for..in iterate over the keys.
-      return dict.keys();
+      return dict.listkeys();
     },
 
     iterate: function DictProxy_iterate() {
-      return dict.iterkeys();
+      return dict.keys;
     },
 
     keys: function DictProxy_keys() {
