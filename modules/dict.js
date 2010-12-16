@@ -60,21 +60,20 @@ function unconvert(aProp) {
 function Dict(aInitial) {
   if (aInitial === undefined)
     aInitial = {};
-  this._items = {};
+  this._items = {count: 0};
   for (let [key, val] in Iterator(aInitial)) {
     this._items[convert(key)] = val;
-    this._count++;
+    this._items.count++;
   }
   return Object.freeze(this);
 }
 
 Dict.prototype = Object.freeze({
-  _count: 0,
   /**
    * The number of items in the dictionary.
    */
   get count() {
-    return this._count;
+    return this._items.count;
   },
 
   /**
@@ -103,7 +102,7 @@ Dict.prototype = Object.freeze({
   set: function Dict_set(aKey, aValue) {
     let prop = convert(aKey);
     if (!this._items.hasOwnProperty(prop))
-      this._count++;
+      this._items.count++;
     this._items[prop] = aValue;
   },
 
@@ -125,7 +124,7 @@ Dict.prototype = Object.freeze({
     let prop = convert(aKey);
     if (this._items.hasOwnProperty(prop)) {
       delete this._items[prop];
-      this._count--;
+      this._items.count--;
       return true;
     }
     return false;
