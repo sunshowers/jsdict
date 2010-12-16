@@ -100,15 +100,21 @@ Dict.prototype = Object.freeze({
     return false;
   },
 
+  /*
+   * List and iterator functions
+   *
+   * No guarantees whatsoever are made about the order of elements.
+   */
+
   /**
-   * Returns a list of all the keys in the dictionary.
+   * Returns a list of all the keys in the dictionary in an arbitrary order.
    */
   listkeys: function Dict_listkeys() {
     return [unconvert(k) for (k in this._items)];
   },
 
   /**
-   * Returns a list of all the values in the dictionary.
+   * Returns a list of all the values in the dictionary in an arbitrary order.
    */
   listvalues: function Dict_listvalues() {
     let items = this._items;
@@ -116,7 +122,8 @@ Dict.prototype = Object.freeze({
   },
 
   /**
-   * Returns a list of all the items in the dictionary as key-value pairs.
+   * Returns a list of all the items in the dictionary as key-value pairs
+   * in an arbitrary order.
    */
   listitems: function Dict_listitems() {
     let items = this._items;
@@ -124,7 +131,8 @@ Dict.prototype = Object.freeze({
   },
 
   /**
-   * Returns an iterator over all the keys in the dictionary.
+   * Returns an iterator over all the keys in the dictionary in an arbitrary
+   * order.
    */
   get keys() {
     // If we don't capture this._items here then the this-binding will be
@@ -134,7 +142,8 @@ Dict.prototype = Object.freeze({
   },
 
   /**
-   * Returns an iterator over all the values in the dictionary.
+   * Returns an iterator over all the values in the dictionary in an arbitrary
+   * order.
    */
   get values() {
     // If we don't capture this._items here then the this-binding will be
@@ -144,7 +153,8 @@ Dict.prototype = Object.freeze({
   },
 
   /**
-   * Returns an iterator over all the items in the dictionary as key-value pairs.
+   * Returns an iterator over all the items in the dictionary as key-value pairs
+   * in an arbitrary order.
    */
   get items() {
     // If we don't capture this._items here then the this-binding will be
