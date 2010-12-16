@@ -60,7 +60,7 @@ function unconvert(aProp) {
 function Dict(aInitial) {
   if (aInitial === undefined)
     aInitial = {};
-  this._items = {count: 0};
+  this._state = {count: 0, items: {}};
   for (let [key, val] in Iterator(aInitial)) {
     this._items[convert(key)] = val;
     this._items.count++;
@@ -73,7 +73,7 @@ Dict.prototype = Object.freeze({
    * The number of items in the dictionary.
    */
   get count() {
-    return this._items.count;
+    return this._state.count;
   },
 
   /**
@@ -89,8 +89,9 @@ Dict.prototype = Object.freeze({
     if (aDefault === undefined)
       aDefault = null;
     let prop = convert(aKey);
-    if (this._items.hasOwnProperty(prop))
-      return this._items[prop];
+    let items = this._state.items;
+    if (items.hasOwnProperty(prop))
+      return items[prop];
     else
       return aDefault;
   },
@@ -101,9 +102,10 @@ Dict.prototype = Object.freeze({
    */
   set: function Dict_set(aKey, aValue) {
     let prop = convert(aKey);
-    if (!this._items.hasOwnProperty(prop))
-      this._items.count++;
-    this._items[prop] = aValue;
+    let items = this._state.items;
+    if (!items.hasOwnProperty(prop))
+      this._state.count++;
+    items[prop] = aValue;
   },
 
   /**
@@ -111,7 +113,7 @@ Dict.prototype = Object.freeze({
    * it will be converted to a string before the set happens.
    */
   has: function Dict_has(aKey) {
-    return (this._items.hasOwnProperty(convert(aKey)));
+    return (this._state.items.hasOwnProperty(convert(aKey)));
   },
 
   /**
@@ -122,9 +124,9 @@ Dict.prototype = Object.freeze({
    */
   del: function Dict_del(aKey) {
     let prop = convert(aKey);
-    if (this._items.hasOwnProperty(prop)) {
+    if (this._state.items.hasOwnProperty(prop)) {
       delete this._items[prop];
-      this._items.count--;
+      this._state.count--;
       return true;
     }
     return false;
@@ -140,14 +142,14 @@ Dict.prototype = Object.freeze({
    * Returns a list of all the keys in the dictionary in an arbitrary order.
    */
   listkeys: function Dict_listkeys() {
-    return [unconvert(k) for (k in this._items)];
+    return [unconvert(k) for (k in this._state.items)];
   },
 
   /**
    * Returns a list of all the values in the dictionary in an arbitrary order.
    */
   listvalues: function Dict_listvalues() {
-    let items = this._items;
+    let items = this._state.items;
     return [items[k] for (k in items)];
   },
 
@@ -156,7 +158,7 @@ Dict.prototype = Object.freeze({
    * in an arbitrary order.
    */
   listitems: function Dict_listitems() {
-    let items = this._items;
+    let items = this._state.items;
     return [[unconvert(k), items[k]] for (k in items)];
   },
 
@@ -168,7 +170,7 @@ Dict.prototype = Object.freeze({
   get keys() {
     // If we don't capture this._items here then the this-binding will be
     // incorrect when the generator is executed
-    let items = this._items;
+    let items = this._state.items;
     return (unconvert(k) for (k in items));
   },
 
@@ -180,7 +182,7 @@ Dict.prototype = Object.freeze({
   get values() {
     // If we don't capture this._items here then the this-binding will be
     // incorrect when the generator is executed
-    let items = this._items;
+    let items = this._state.items;
     return (items[k] for (k in items));
   },
 
@@ -192,7 +194,7 @@ Dict.prototype = Object.freeze({
   get items() {
     // If we don't capture this._items here then the this-binding will be
     // incorrect when the generator is executed
-    let items = this._items;
+    let items = this._state.items;
     return ([unconvert(k), items[k]] for (k in items));
   },
 
