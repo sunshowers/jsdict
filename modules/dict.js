@@ -60,11 +60,12 @@ function unconvert(aProp) {
 function Dict(aInitial) {
   if (aInitial === undefined)
     aInitial = {};
-  this._state = {count: 0, items: {}};
+  let items = {}, count = 0;
   for (let [key, val] in Iterator(aInitial)) {
-    this._items[convert(key)] = val;
-    this._items.count++;
+    items[convert(key)] = val;
+    count++;
   }
+  this._state = {count: count, items: items};
   return Object.freeze(this);
 }
 
