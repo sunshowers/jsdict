@@ -149,7 +149,8 @@ Dict.prototype = Object.freeze({
 
   /**
    * Returns an iterator over all the keys in the dictionary in an arbitrary
-   * order.
+   * order. No guarantees are made about what happens if the dictionary is
+   * mutated during iteration.
    */
   get keys() {
     // If we don't capture this._items here then the this-binding will be
@@ -160,7 +161,8 @@ Dict.prototype = Object.freeze({
 
   /**
    * Returns an iterator over all the values in the dictionary in an arbitrary
-   * order.
+   * order. No guarantees are made about what happens if the dictionary is
+   * mutated during iteration.
    */
   get values() {
     // If we don't capture this._items here then the this-binding will be
@@ -171,7 +173,8 @@ Dict.prototype = Object.freeze({
 
   /**
    * Returns an iterator over all the items in the dictionary as key-value pairs
-   * in an arbitrary order.
+   * in an arbitrary order. No guarantees are made about what happens if the
+   * dictionary is mutated during iteration.
    */
   get items() {
     // If we don't capture this._items here then the this-binding will be
