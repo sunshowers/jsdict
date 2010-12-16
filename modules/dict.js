@@ -60,13 +60,16 @@ function unconvert(aProp) {
  * properties.
  *
  * @param aInitial An object containing the initial keys and values of this
- *                 dictionary.
+ *                 dictionary. Only the "own" enumerable properties of the
+ *                 object are considered.
  */
 function Dict(aInitial) {
   if (aInitial === undefined)
     aInitial = {};
   let items = {}, count = 0;
   for (let [key, val] in Iterator(aInitial)) {
+    if (!aInitial.hasOwnProperty(key))
+      continue;
     items[convert(key)] = val;
     count++;
   }
