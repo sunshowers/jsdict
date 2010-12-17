@@ -141,6 +141,16 @@ Dict.prototype = Object.freeze({
     return false;
   },
 
+  /**
+   * Returns a shallow copy of this dictionary.
+   */
+  copy: function Dict_copy() {
+    let newItems = {};
+    for (let [key, val] in this.items)
+      newItems[key] = val;
+    return new Dict(newItems);
+  },
+
   /*
    * List and iterator functions
    *
