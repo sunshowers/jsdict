@@ -99,10 +99,7 @@ Dict.prototype = Object.freeze({
       aDefault = null;
     let prop = convert(aKey);
     let items = this._state.items;
-    if (items.hasOwnProperty(prop))
-      return items[prop];
-    else
-      return aDefault;
+    return items.hasOwnProperty(prop) ? items[prop] : aDefault;
   },
 
   /**
