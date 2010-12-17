@@ -113,7 +113,7 @@ Dict.prototype = Object.freeze({
 
   /**
    * Returns whether a key is in the dictionary. If the key is a not a string,
-   * it will be converted to a string before the set happens.
+   * it will be converted to a string before the lookup happens.
    */
   has: function Dict_has(aKey) {
     return (this._state.items.hasOwnProperty(convert(aKey)));
