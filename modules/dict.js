@@ -67,9 +67,8 @@ function Dict(aInitial) {
   if (aInitial === undefined)
     aInitial = {};
   let items = {}, count = 0;
+  // That we don't look up the prototype chain is guaranteed by Iterator.
   for (let [key, val] in Iterator(aInitial)) {
-    if (!aInitial.hasOwnProperty(key))
-      continue;
     items[convert(key)] = val;
     count++;
   }
