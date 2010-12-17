@@ -90,12 +90,10 @@ Dict.prototype = Object.freeze({
    *
    * @param aKey The key to look up
    * @param [aDefault] An optional default value to return if the key is not
-   *                   present. Defaults to |null|.
+   *                   present. Defaults to |undefined|.
    * @returns The item, or aDefault if it isn't found.
    */
   get: function Dict_get(aKey, aDefault) {
-    if (aDefault === undefined)
-      aDefault = null;
     let prop = convert(aKey);
     let items = this._state.items;
     return items.hasOwnProperty(prop) ? items[prop] : aDefault;
