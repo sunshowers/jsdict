@@ -121,7 +121,7 @@ Dict.prototype = Object.freeze({
 
   /**
    * Deletes a key from the dictionary. If the key is a not a string, it will be
-   * converted to a string before the set happens.
+   * converted to a string before the delete happens.
    *
    * @returns true if the key was found, false if it wasn't.
    */
